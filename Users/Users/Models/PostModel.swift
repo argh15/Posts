@@ -6,7 +6,7 @@
 //
 
 
-struct PostModel: Codable, Identifiable {
+struct PostModel: Decodable, Identifiable {
     
     let id: Int
     let title, description: String

@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+/// A view that displays a custom cell for post information.
 struct PostCustomViewCell: View {
     
+    /// The title of the post.
     var title: String
+    /// The description of the post.
     var description: String
     
     var body: some View {

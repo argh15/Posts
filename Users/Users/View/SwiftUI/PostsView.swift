@@ -7,19 +7,35 @@
 
 import SwiftUI
 
+/// A view that displays a list of posts for a specific user.
 struct PostsView: View {
     
+    /// The view model that provides post data and user information for this view.
     @ObservedObject var viewModel: PostsViewModel
     
     var body: some View {
         NavigationStack {
-            List(viewModel.posts) { post in
-                PostCustomViewCell(title: post.title, description: post.description)
+            if viewModel.isLoading {
+                ProgressView("Loading posts ...")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .padding()
+            } else {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .padding()
+                } else {
+                    List(viewModel.posts) { post in
+                        // A custom view cell for displaying post information.
+                        PostCustomViewCell(title: post.title, description: post.description)
+                    }
+                    .navigationTitle(viewModel.userModel.name)
+                }
             }
-            .navigationTitle(viewModel.userModel.name)
-            .onAppear {
-                viewModel.getPosts()
-            }
+        }
+        // Fetch posts when the view appears.
+        .onAppear {
+            viewModel.getPosts()
         }
     }
 }

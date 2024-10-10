@@ -7,8 +7,16 @@
 
 import Foundation
 
+/// A protocol that defines the methods for making API requests.
 protocol APIServiceProtocol {
-    func getData<T: Codable>(
+    
+    /// Fetches data from the specified API endpoint.
+    /// - Parameters:
+    ///   - endPoint: The endpoint to fetch data from.
+    ///   - model: The type of model to decode the response into.
+    ///   - params: Optional parameters to include in the request.
+    ///   - completion: A closure that is called with the result of the API request, containing either the decoded data or an error.
+    func getData<T: Decodable>(
         endPoint: EndPoints,
         model: T.Type,
         params: [String: Any]?,
@@ -16,15 +24,21 @@ protocol APIServiceProtocol {
     )
 }
 
+/// A concrete implementation of `APIServiceProtocol` that handles API requests.
 struct APIService: APIServiceProtocol {
     
-    func getData<T: Codable>(
+    /// Fetches data from the specified API endpoint.
+    /// - Parameters:
+    ///   - endPoint: The endpoint to fetch data from.
+    ///   - model: The type of model to decode the response into.
+    ///   - params: Optional parameters to include in the request.
+    ///   - completion: A closure that is called with the result of the API request, containing either the decoded data or an error.
+    func getData<T: Decodable>(
         endPoint: EndPoints,
         model: T.Type,
         params: [String: Any]? = nil,
         completion: @escaping (Result<T, CustomError>) ->()
     ) {
-        
         guard let url = createURL(baseURL: APIConstants().baseURL, endPoint: endPoint.rawValue, params: params) else {
             completion(.failure(.invalidURL))
             return
@@ -48,11 +62,9 @@ struct APIService: APIServiceProtocol {
                 completion(.failure(.invalidResponse))
                 return
             }
-            
-            let decoder = JSONDecoder()
-            
+                        
             do {
-                let decodedData = try decoder.decode(model, from: data)
+                let decodedData = try JSONDecoder().decode(model, from: data)
                 completion(.success(decodedData))
             } catch {
                 completion(.failure(.invalidData))
@@ -61,6 +73,12 @@ struct APIService: APIServiceProtocol {
         .resume()
     }
     
+    /// Creates a URL with the specified base URL, endpoint, and optional parameters.
+    /// - Parameters:
+    ///   - baseURL: The base URL of the API.
+    ///   - endPoint: The specific endpoint to append to the base URL.
+    ///   - params: Optional parameters to include in the URL as query items.
+    /// - Returns: A constructed URL if successful, otherwise `nil`.
     private func createURL(baseURL: String, endPoint: String, params: [String: Any]?) -> URL? {
         let urlString = baseURL + endPoint
         
@@ -69,9 +87,9 @@ struct APIService: APIServiceProtocol {
             urlComponents?.queryItems = params.map { key, value in
                 URLQueryItem(name: key, value: "\(value)")
             }
-            return urlComponents?.url
+            return urlComponents?.url // Return URL with query items if parameters exist
         }
         
-        return URL(string: urlString)
+        return URL(string: urlString) // Return the URL without parameters
     }
 }

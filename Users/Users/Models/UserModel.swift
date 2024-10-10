@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserModel: Codable, Identifiable {
+struct UserModel: Decodable, Identifiable {
     let id: Int
     let name, username, email: String
     let address: Address
@@ -15,7 +15,7 @@ struct UserModel: Codable, Identifiable {
     let company: Company
 }
 
-struct Address: Codable {
+struct Address: Decodable {
     let street, suite, city, zipCode: String
     
     enum CodingKeys: String, CodingKey {
@@ -25,7 +25,7 @@ struct Address: Codable {
 }
 
 
-struct Company: Codable {
+struct Company: Decodable {
     let name, catchPhrase: String
 }
 

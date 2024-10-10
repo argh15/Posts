@@ -8,13 +8,17 @@
 import Foundation
 @testable import Users
 
+/// A mock implementation of `APIServiceProtocol` for testing purposes.
 final class MockAPIService: APIServiceProtocol {
-    
+    /// A boolean flag indicating whether the mock service should return an error.
     var shouldReturnError = false
     
+    /// A dictionary to store mock data generators for various model types.
     private var mockDataGenerators: [String: () -> Any] = [:]
     
+    /// Initializes the `MockAPIService` and sets up mock data generators for different models.
     init() {
+        // Generator for an array of UserModel
         mockDataGenerators[String(describing: [UserModel].self)] = {
             let mockUser = UserModel(
                 id: 1,
@@ -29,6 +33,7 @@ final class MockAPIService: APIServiceProtocol {
             return [mockUser]
         }
         
+        // Generator for an array of PostModel
         mockDataGenerators[String(describing: [PostModel].self)] = {
             let mockPost = PostModel(
                 id: 1,
@@ -39,18 +44,27 @@ final class MockAPIService: APIServiceProtocol {
         }
     }
     
-    func getData<T: Codable>(endPoint: EndPoints, model: T.Type, params: [String: Any]?, completion: @escaping (Result<T, CustomError>) -> Void) {
+    /// Fetches mock data for the specified API endpoint.
+    /// - Parameters:
+    ///   - endPoint: The endpoint to fetch data from (not used in mock).
+    ///   - model: The type of model to decode the response into.
+    ///   - params: Optional parameters to include in the request (not used in mock).
+    ///   - completion: A closure that is called with the result of the mock API request,
+    ///                 containing either the decoded data or an error.
+    func getData<T: Decodable>(endPoint: EndPoints, model: T.Type, params: [String: Any]?, completion: @escaping (Result<T, CustomError>) -> Void) {
         DispatchQueue.main.async {
+            // Simulate an error if the flag is set
             if self.shouldReturnError {
                 completion(.failure(.invalidResponse))
                 return
             }
             
+            // Generate mock data for the requested model type
             if let mockDataGenerator = self.mockDataGenerators[String(describing: model)] {
                 let mockData = mockDataGenerator()
-                completion(.success(mockData as! T))
+                completion(.success(mockData as! T)) // Return the generated mock data
             } else {
-                completion(.failure(.invalidData))
+                completion(.failure(.invalidData)) // Return error if model type is not found
             }
         }
     }
