@@ -13,7 +13,7 @@ struct UsersApp: App {
     @StateObject private var usersViewModel: UsersViewModel
     
     init() {
-        let apiService = APIService()
+        let apiService: APIServiceProtocol = APIService()
         _usersViewModel = StateObject(wrappedValue: UsersViewModel(apiService: apiService))
     }
     

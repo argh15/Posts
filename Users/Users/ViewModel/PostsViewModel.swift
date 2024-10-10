@@ -10,10 +10,10 @@ import Foundation
 final class PostsViewModel: ObservableObject {
     
     @Published var posts: [PostModel] = []
-    private var apiService: APIService!
+    private var apiService: APIServiceProtocol!
     var userModel: UserModel!
     
-    init(apiService: APIService, userModel: UserModel) {
+    init(apiService: APIServiceProtocol, userModel: UserModel) {
         self.apiService = apiService
         self.userModel = userModel
     }

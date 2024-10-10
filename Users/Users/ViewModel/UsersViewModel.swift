@@ -10,14 +10,14 @@ import Foundation
 final class UsersViewModel: ObservableObject {
     
     @Published var users: [UserModel] = []
-    var apiService: APIService!
+    var apiService: APIServiceProtocol
     
-    init(apiService: APIService) {
+    init(apiService: APIServiceProtocol) {
         self.apiService = apiService
     }
     
     func getUsers() {
-        apiService.getData(endPoint: .users, model: [UserModel].self) { [weak self] result in
+        apiService.getData(endPoint: .users, model: [UserModel].self, params: nil) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let users):

@@ -7,7 +7,16 @@
 
 import Foundation
 
-struct APIService {
+protocol APIServiceProtocol {
+    func getData<T: Codable>(
+        endPoint: EndPoints,
+        model: T.Type,
+        params: [String: Any]?,
+        completion: @escaping (Result<T, CustomError>) -> ()
+    )
+}
+
+struct APIService: APIServiceProtocol {
     
     func getData<T: Codable>(
         endPoint: EndPoints,
